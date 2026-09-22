@@ -1,0 +1,32 @@
+# ---- 构建产物 ----
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+.vs/
+
+# ---- 运行输出（报表与标注图，程序运行时生成）----
+output/
+output_userSN/
+
+# ---- 开发期临时区 ----
+# 诊断脚本、中间产物、A/B 结果 CSV 与对照图。FIXPLAN 各节按 .scratch/rNN/ 引用它们作为
+# "可复跑的证据"，但它们是临时区、体积大（约 2.5 GB），故不入库。
+.scratch/
+
+# ---- 工具会话状态 ----
+# .zcode/plans 与 workflow-drafts 是 AI 会话的临时产物；但要保留 .zcode/workflows/——
+# 里面的工作流定义是**项目资产**，应按仓库文件对待。
+.zcode/plans/
+.zcode/workflow-drafts/
+
+# ---- 现场厂商原始数据：30.5 GB ----
+# tests/pp 是厂商导出的现场 jpg + 私有格式 .vdb（约 30.5 GB），超出普通 git 仓库的合理范围，
+# 故不入库。仓库里的现场语料类测试在样本缺失时会**自动跳过**（见 tests/README.md）。
+# 需要这批数据时按 tests/README.md 的说明单独放置。
+tests/pp/
+
+# ---- 杂项 ----
+*.log
+*.tmp

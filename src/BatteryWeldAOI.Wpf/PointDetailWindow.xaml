@@ -1,0 +1,112 @@
+<Window x:Class="BatteryWeldAOI.Wpf.PointDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="点位检测详情" Width="980" Height="840" MinWidth="720" MinHeight="560"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{StaticResource WindowBack}"
+        FontFamily="Microsoft YaHei UI" FontSize="13">
+    <DockPanel>
+
+        <!-- 顶部：点位名 + 状态徽标 + 导航/操作 -->
+        <Border DockPanel.Dock="Top" Background="{StaticResource PanelBack}"
+                BorderBrush="{StaticResource PanelBorder}" BorderThickness="0,0,0,1" Padding="12,8">
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="PointNameText" FontSize="18" FontWeight="Bold"/>
+                    <Border x:Name="StatusBadge" CornerRadius="3" Padding="10,3" Margin="12,0,0,0"
+                            VerticalAlignment="Center">
+                        <TextBlock x:Name="StatusText" FontWeight="Bold"/>
+                    </Border>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="PrevButton" Content="◀ 上一处" Click="OnPrev" MinWidth="80"/>
+                    <Button x:Name="NextButton" Content="下一处 ▶" Click="OnNext" MinWidth="80"/>
+                    <Button Content="导出图片" Click="OnExport" MinWidth="80"/>
+                    <Button Content="关闭" Click="OnClose" MinWidth="64"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- 底部：指标明细 -->
+        <Border DockPanel.Dock="Bottom" Background="{StaticResource PanelBack}"
+                BorderBrush="{StaticResource PanelBorder}" BorderThickness="0,1,0,0" Padding="12,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="检测结果" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" x:Name="ResultText" FontWeight="Bold" Margin="0,0,24,5"
+                           TextWrapping="Wrap"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="缺陷类型" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="0" Grid.Column="3" x:Name="DefectText" Margin="0,0,0,5" TextWrapping="Wrap"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="X 向偏移" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" x:Name="OffsetXText" FontFamily="Consolas" Margin="0,0,24,5"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="Y 向偏移" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="1" Grid.Column="3" x:Name="OffsetYText" FontFamily="Consolas" Margin="0,0,0,5"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="偏移距离" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" x:Name="DistanceText" FontFamily="Consolas" Margin="0,0,24,5"/>
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="判定公差" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="2" Grid.Column="3" x:Name="ToleranceText" FontFamily="Consolas" Margin="0,0,0,5"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="处理耗时" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" x:Name="ProcessingText" FontFamily="Consolas" Margin="0,0,24,5"/>
+                <!-- 坐标一律给**原图**坐标系并标明口径：算法内部是在缩小后的工作分辨率上算的，
+                     给内部坐标会让操作员拿它去图上核对时量不到（20MP 现场图上差约 8 倍），
+                     "标注圈是不是画偏了"这类疑问就没法自查。实际图幅见底部的「图像尺寸」行。 -->
+                <TextBlock Grid.Row="3" Grid.Column="2" Text="极柱中心 px（原图）" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="3" Grid.Column="3" x:Name="PoleCenterText" FontFamily="Consolas" Margin="0,0,0,5"/>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="焊缝中心 px（原图）" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="4" Grid.Column="1" x:Name="WeldCenterText" FontFamily="Consolas" Margin="0,0,24,5"/>
+                <TextBlock Grid.Row="4" Grid.Column="2" Text="标注图" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="4" Grid.Column="3" x:Name="ImagePathText" FontFamily="Consolas"
+                           FontSize="11" Foreground="{StaticResource TextDim}" TextTrimming="CharacterEllipsis" Margin="0,0,0,5"/>
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="源文件" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" x:Name="SourceText"
+                           FontFamily="Consolas" FontSize="11" TextTrimming="CharacterEllipsis" Margin="0,0,0,5"/>
+
+                <!-- 原图坐标必须配图幅才可解释；同时点出检测实际用的工作分辨率，
+                     否则"坐标与图对不上"会被当成算法错位。 -->
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="图像尺寸" Foreground="{StaticResource TextDim}" Margin="0,0,16,5"/>
+                <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" x:Name="ImageSizeText"
+                           FontFamily="Consolas" FontSize="11" Foreground="{StaticResource TextDim}"
+                           TextTrimming="CharacterEllipsis" Margin="0,0,0,5"/>
+
+                <!-- 熔核是"有厚度的环"：只给外半径表达不出环宽，这里把内沿半径与环宽一并给出 -->
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="熔核环宽" Foreground="{StaticResource TextDim}" Margin="0,0,16,0"/>
+                <TextBlock Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3" x:Name="RingWidthText"
+                           FontFamily="Consolas" FontSize="11" Foreground="{StaticResource TextDim}"
+                           TextTrimming="CharacterEllipsis" Margin="0,0,0,0"/>
+            </Grid>
+        </Border>
+
+        <!-- 中部：标注大图 -->
+        <Border Background="#FF0D0D0D" Padding="8">
+            <Grid>
+                <Image x:Name="DetailImage" Stretch="Uniform"
+                       RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                <TextBlock x:Name="NoImageText"
+                           Text="无可用图像（未开启「保存逐点标注图」或图像已失效）"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Foreground="{StaticResource TextDim}" FontSize="15" Visibility="Collapsed"/>
+            </Grid>
+        </Border>
+    </DockPanel>
+</Window>
